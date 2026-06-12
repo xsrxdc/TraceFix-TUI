@@ -63,6 +63,30 @@ const cli = yargs(args)
     process.env.AGENT = "1"
     process.env.OPENCODE = "1"
     process.env.OPENCODE_PID = String(process.pid)
+
+    // tracefix: auto-load <cwd>/.env (fill-only — never overrides variables the
+    // user already exported) so provider API keys work without `source .env`.
+    // Providers detect keys via their declared env vars (provider.ts dep.env()),
+    // so populating process.env before the server boots is the whole job.
+    {
+      const fs = await import("node:fs")
+      const path = await import("node:path")
+      const file = path.join(process.cwd(), ".env")
+      if (fs.existsSync(file)) {
+        for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+          if (line.trimStart().startsWith("#")) continue
+          const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/)
+          if (!m) continue
+          let value = m[2]
+          if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+          )
+            value = value.slice(1, -1)
+          if (process.env[m[1]] === undefined) process.env[m[1]] = value
+        }
+      }
+    }
   })
   .usage("")
   .completion("completion", "generate shell completion script")

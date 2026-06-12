@@ -139,6 +139,7 @@ export const layer = Layer.effect(
         const agents: Record<string, Info> = {
           designer: {
             name: "designer",
+            color: "#bc8cff", // tracefix purple — matches the design-view theme
             description:
               "TraceFix protocol designer. Turns a natural-language multi-agent requirement into a TLA+-verified coordination protocol (IR → PlusCal → TLC → per-agent prompts), asking the user when information is missing and pausing for plan approval.",
             options: {},
