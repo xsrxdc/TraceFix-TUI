@@ -160,6 +160,7 @@ export const layer = Layer.effect(
           build: {
             name: "build",
             description: "The default agent. Executes tools based on configured permissions.",
+            hidden: true, // tracefix: designer is the product; re-enable via config if needed
             options: {},
             permission: Permission.merge(
               defaults,
@@ -175,6 +176,7 @@ export const layer = Layer.effect(
           plan: {
             name: "plan",
             description: "Plan mode. Disallows all edit tools.",
+            hidden: true, // tracefix: designer is the product; re-enable via config if needed
             options: {},
             permission: Permission.merge(
               defaults,
@@ -338,7 +340,7 @@ export const layer = Layer.effect(
             agents,
             values(),
             sortBy(
-              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "build"), "desc"],
+              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "designer"), "desc"],
               [(x) => x.name, "asc"],
             ),
           )
