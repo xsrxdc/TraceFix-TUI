@@ -137,6 +137,26 @@ export const layer = Layer.effect(
         const user = Permission.fromConfig(cfg.permission ?? {})
 
         const agents: Record<string, Info> = {
+          designer: {
+            name: "designer",
+            description:
+              "TraceFix protocol designer. Turns a natural-language multi-agent requirement into a TLA+-verified coordination protocol (IR → PlusCal → TLC → per-agent prompts), asking the user when information is missing and pausing for plan approval.",
+            options: {},
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                question: "allow", // ask the user for missing info + the plan-approval gate
+                doom_loop: "allow", // verify→fix→verify repair loops legitimately repeat similar bash calls
+                task: { "*": "deny" }, // the designer is one agent; no subagent fan-out
+                webfetch: "deny",
+                websearch: "deny",
+              }),
+              user,
+            ),
+            prompt: PROMPT_DESIGNER,
+            mode: "primary",
+            native: true,
+          },
           build: {
             name: "build",
             description: "The default agent. Executes tools based on configured permissions.",
@@ -175,26 +195,6 @@ export const layer = Layer.effect(
               }),
               user,
             ),
-            mode: "primary",
-            native: true,
-          },
-          designer: {
-            name: "designer",
-            description:
-              "TraceFix protocol designer. Turns a natural-language multi-agent requirement into a TLA+-verified coordination protocol (IR → PlusCal → TLC → per-agent prompts), asking the user when information is missing and pausing for plan approval.",
-            options: {},
-            permission: Permission.merge(
-              defaults,
-              Permission.fromConfig({
-                question: "allow", // ask the user for missing info + the plan-approval gate
-                doom_loop: "allow", // verify→fix→verify repair loops legitimately repeat similar bash calls
-                task: { "*": "deny" }, // the designer is one agent; no subagent fan-out
-                webfetch: "deny",
-                websearch: "deny",
-              }),
-              user,
-            ),
-            prompt: PROMPT_DESIGNER,
             mode: "primary",
             native: true,
           },
