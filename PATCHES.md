@@ -65,6 +65,7 @@ One row per commit on top of the base tag, in cherry-pick order (`git log
 | 10 | kill self-update | cli/tui/worker.ts, cli/upgrade.ts stub | fork must never replace itself with upstream via autoupdate / curl\|sh | no |
 | 11 | drop cloud-feature dead weight | packages/cli removed; TUI share/org/workspace dialogs, Go-upsell art, stale tips | features tied to opencode.ai cloud or deleted commands | no |
 | 12 | designer uses init's printed (timestamped) workspace path | agent/prompt/designer.txt | tracefix CLI now timestamps workspaces — every design is a fresh dir | no |
+| 13 | prose-derivation + assumptions discipline | agent/prompt/designer.txt | real requirements are unscaffolded prose; structural choices must land in plan.md ## Assumptions | no |
 
 Dormant-but-kept (deliberate): server-side `/session/share` routes, `account/`,
 `control-plane/`, `sync/` modules (never activate without an opencode.ai login;

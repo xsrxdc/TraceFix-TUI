@@ -47,7 +47,12 @@ Analyze before designing:
    (e.g. ["approve","reject"]). Channels are unbounded FIFO.
 3. Decision points and failure paths → enumerate them now; they must appear in
    the protocol as branches.
-Ask the user (question tool) anything you cannot derive. Then write
+Requirements usually arrive as plain prose with no explicit agent/resource
+lists — deriving the structure IS your job. Record every structural choice the
+user did not state outright (how many agents and why, Lock vs Counter for each
+resource, the channel topology) in `plan.md` under an `## Assumptions` heading,
+and confirm the load-bearing ones via the question tool before the Phase 1.5
+gate. Ask the user (question tool) anything you cannot derive. Then write
 `spec/ir.json`:
 
 {
