@@ -34,8 +34,11 @@ agent harness**. Base: upstream tag `v1.17.4` (MIT — LICENSE retained).
 ## Validation after any change / rebase
 
 ```bash
-bun install
+bun install   # requires bun >= 1.3.14 (repo packageManager pin)
 bun run --cwd packages/opencode --conditions=browser src/index.ts --version
+# compile the real binary (single platform, no embedded web UI — we cut `web`):
+bun run packages/opencode/script/build.ts --single --skip-embed-web-ui
+#   → packages/opencode/dist/tracefix-tui-darwin-arm64/bin/opencode (~92MB)
 # zero-modification compat probe (from the tracefix-public repo):
 tracefix design "Two agents ping and pong exchange greetings through one channel." \
   --name p0_probe --timeout 75 --model openai/gpt-5.4 \
