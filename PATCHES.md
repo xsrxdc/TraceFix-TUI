@@ -48,6 +48,31 @@ tracefix design "Two agents ping and pong exchange greetings through one channel
 
 ## Patch manifest
 
-| # | Area | Files | Why | Upstreamable? |
-|---|------|-------|-----|---------------|
-| — | (none yet — P0 is a clean pin at v1.15.13) | | | |
+One row per commit on top of the base tag, in cherry-pick order (`git log
+--oneline v1.17.4..tracefix` must match this list bottom-up).
+
+| # | Commit subject | Area | Why | Upstreamable? |
+|---|----------------|------|-----|---------------|
+| 1 | slim to the CLI/TUI closure | deletes 12 packages + cloud/CI infra | lean fork: keep only what the binary build reaches | no |
+| 2 | rename the face to tracefix-tui | scriptName, logo, wordmark | branding; compat surface (env vars, paths) untouched | no |
+| 3 | cut the command surface 23→12 | src/index.ts, cli/cmd/* | verification harness doesn't need acp/account/upgrade/web/github/pr/db/... | no |
+| 4 | build works on the slim tree | packages/script TEAM_MEMBERS fallback | build script read a deleted CI file | yes (graceful fallback) |
+| 5 | native /design | agent/designer + command/design templates | the TraceFix designer agent + slash command | no |
+| 6 | harness resolves the verification toolchain | tool/shell.ts shellEnv PATH injection | `tla-verify-pluscal` on PATH without venv activation | no |
+| 7 | designer default + user-visible rebrand | tui strings, GO_UPSELL off | no upstream product upsells/titles in our TUI | no |
+| 8 | designer is THE agent | agent/agent.ts (build/plan hidden, sort default) | single-purpose harness: designer is the only primary | no |
+| 9 | .env auto-load + designer purple | src/index.ts middleware, agent color | provider keys work without `source .env` | partly (env loader) |
+| 10 | kill self-update | cli/tui/worker.ts, cli/upgrade.ts stub | fork must never replace itself with upstream via autoupdate / curl\|sh | no |
+| 11 | drop cloud-feature dead weight | packages/cli removed; TUI share/org/workspace dialogs, Go-upsell art, stale tips | features tied to opencode.ai cloud or deleted commands | no |
+
+Dormant-but-kept (deliberate): server-side `/session/share` routes, `account/`,
+`control-plane/`, `sync/` modules (never activate without an opencode.ai login;
+deleting them entangles app-runtime/storage/openapi and makes every upstream
+sync conflict). The 24 bundled `@ai-sdk/*` providers (~40% of binary size) stay
+until size actually hurts — cutting them diverges from upstream provider.ts.
+
+Runtime flags the fork relies on (set by the Python harness for headless
+reproducibility, optional in the TUI): `OPENCODE_DISABLE_MODELS_FETCH=1`
+(freeze the models.dev catalog snapshot), `OPENCODE_DISABLE_LSP_DOWNLOAD=1`
+(no on-demand LSP binary downloads). Auto-update needs no flag — patch 10
+removes it at the source.
