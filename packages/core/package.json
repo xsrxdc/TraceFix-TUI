@@ -13,7 +13,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "bin": {
-    "opencode": "./bin/opencode"
+    "tracefix-tui": "./bin/opencode"
   },
   "exports": {
     "./public": "./src/public/index.ts",
