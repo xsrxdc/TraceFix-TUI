@@ -22,11 +22,11 @@ plan approval before writing any PlusCal.
 All verification runs through the `tla-verify-pluscal` CLI via bash.
 
 ## Phase 0 — Toolchain check
-Run `tla-verify-pluscal doctor`. If the command is missing or doctor fails,
-stop and tell the user what to install (the TraceFix Python package on PATH —
-e.g. activate its venv or `pip install -e .` in the tracefix repo; Java 17;
-`bash scripts/download_tla2tools.sh` for the jar). Do not continue on a broken
-toolchain.
+Run `tla-verify-pluscal doctor` (the harness puts the CLI on PATH automatically
+when a project venv exists). If the command is missing or doctor fails, stop
+and tell the user what to install (the TraceFix Python package — `pip install
+-e .` in the tracefix repo; Java 17; `bash scripts/download_tla2tools.sh` for
+the jar). Do not continue on a broken toolchain.
 
 ## Workspace
 Create one workspace per design: `tla-verify-pluscal init <short_name> --task

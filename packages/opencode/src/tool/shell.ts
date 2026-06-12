@@ -1,6 +1,6 @@
 import { Effect, Stream } from "effect"
 import os from "os"
-import { createWriteStream } from "node:fs"
+import { createWriteStream, existsSync } from "node:fs"
 import * as Tool from "./tool"
 import path from "path"
 import { containsPath, type InstanceContext } from "../project/instance-context"
@@ -419,14 +419,37 @@ export const ShellTool = Tool.define(
       return scan
     })
 
+    // tracefix: make the verification CLI (tla-verify-pluscal) visible to every
+    // shell without requiring the user to activate a venv first. Resolution:
+    // already on PATH → $TRACEFIX_VENV/bin → <cwd>/.venv/bin. Cached per process.
+    let tracefixBin: string | null | undefined
+    const tracefixPath = (cwd: string) => {
+      if (tracefixBin !== undefined) return tracefixBin
+      tracefixBin = null
+      if (!Bun.which("tla-verify-pluscal")) {
+        for (const dir of [
+          process.env.TRACEFIX_VENV && path.join(process.env.TRACEFIX_VENV, "bin"),
+          path.join(cwd, ".venv", "bin"),
+        ]) {
+          if (dir && existsSync(path.join(dir, "tla-verify-pluscal"))) {
+            tracefixBin = dir
+            break
+          }
+        }
+      }
+      return tracefixBin
+    }
+
     const shellEnv = Effect.fn("ShellTool.shellEnv")(function* (ctx: Tool.Context, cwd: string) {
       const extra = yield* plugin.trigger(
         "shell.env",
         { cwd, sessionID: ctx.sessionID, callID: ctx.callID },
         { env: {} },
       )
+      const tf = tracefixPath(cwd)
       return {
         ...process.env,
+        ...(tf ? { PATH: `${tf}${path.delimiter}${process.env.PATH ?? ""}` } : {}),
         ...extra.env,
       }
     })
