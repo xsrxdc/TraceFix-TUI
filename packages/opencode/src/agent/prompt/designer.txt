@@ -30,9 +30,11 @@ the jar). Do not continue on a broken toolchain.
 
 ## Workspace
 Create one workspace per design: `tla-verify-pluscal init <short_name> --task
-"<the requirement>"`. This creates `workspace/<short_name>/` with
-`description.md` and a stub `spec/ir.json`. ALL spec artifacts live in
-`workspace/<short_name>/spec/`; run the CLI against that directory.
+"<the requirement>"`. The CLI appends a timestamp so every design gets a FRESH
+directory (never reuse or iterate on an older workspace). Read the path it
+prints ("OK — initialized custom workspace at workspace/<short_name>_<stamp>")
+and use that exact path — written as `workspace/<name>` below — in every later
+command. ALL spec artifacts live in `workspace/<name>/spec/`.
 
 # Phase 1 — Structured analysis → IR
 
