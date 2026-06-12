@@ -10,6 +10,7 @@ import { Skill } from "../skill"
 import { EventV2 } from "@opencode-ai/core/event"
 import PROMPT_INITIALIZE from "./template/initialize.txt"
 import PROMPT_REVIEW from "./template/review.txt"
+import PROMPT_DESIGN from "./template/design.txt"
 
 type State = {
   commands: Record<string, Info>
@@ -54,6 +55,7 @@ export function hints(template: string) {
 export const Default = {
   INIT: "init",
   REVIEW: "review",
+  DESIGN: "design",
 } as const
 
 export interface Interface {
@@ -83,6 +85,16 @@ export const layer = Layer.effect(
           return PROMPT_INITIALIZE.replace("${path}", ctx.worktree)
         },
         hints: hints(PROMPT_INITIALIZE),
+      }
+      commands[Default.DESIGN] = {
+        name: Default.DESIGN,
+        description: "design + verify a multi-agent coordination protocol (TraceFix)",
+        agent: "designer",
+        source: "command",
+        get template() {
+          return PROMPT_DESIGN
+        },
+        hints: hints(PROMPT_DESIGN),
       }
       commands[Default.REVIEW] = {
         name: Default.REVIEW,

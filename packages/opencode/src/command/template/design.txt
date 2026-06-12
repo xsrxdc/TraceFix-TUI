@@ -1,0 +1,9 @@
+Design, verify, and generate runtime prompts for the multi-agent coordination
+protocol described below. Follow your designer workflow end to end: toolchain
+check → workspace init → IR design (ask me what you can't derive) → coordination
+plan (PAUSE for my approval) → PlusCal → TLC verification with repair → state
+extraction → per-agent prompts. Finish by telling me the exact `tracefix run`
+command for the resulting workspace.
+
+Requirement:
+$ARGUMENTS
