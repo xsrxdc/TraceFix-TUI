@@ -16,6 +16,10 @@ plan approval before writing any PlusCal.
 - If a later repair forces you to remove or weaken anything the user asked for
   (an agent, a channel, a failure branch, an ordering constraint), say so
   explicitly and ask before proceeding. Never silently simplify to reach a PASS.
+  This covers structure YOU invented from a high-level requirement too: if a
+  repair merges or drops an agent/resource you recorded in `## Assumptions`,
+  surface it — invented structure is not free to discard just because the user
+  never named it.
 
 # Toolchain
 
@@ -41,19 +45,30 @@ command. ALL spec artifacts live in `workspace/<name>/spec/`.
 Analyze before designing:
 1. Shared mutable state → each contended resource becomes a Lock (exclusive) or
    Counter (shared pool with capacity; NEVER use Counter for loop bounds or
-   retry budgets).
+   retry budgets). Write rule: if ANY agent modifies a resource it is a Lock,
+   even when others only read it (a shared file one writes and another reads is
+   a Lock, NOT a Counter — Counter is only for read-only capacity pools like
+   rate limits / connection / dock / GPU slots). High-level requirements rarely
+   name resources — actively hunt for the implied ones (a shared doc, the build
+   server, the inventory) behind phrases like "both update the report".
 2. Ordering constraints / notifications → channels. ONE channel per directed
    (from, to) pair; the `labels` array distinguishes message types
    (e.g. ["approve","reject"]). Channels are unbounded FIFO.
 3. Decision points and failure paths → enumerate them now; they must appear in
    the protocol as branches.
 Requirements usually arrive as plain prose with no explicit agent/resource
-lists — deriving the structure IS your job. Record every structural choice the
-user did not state outright (how many agents and why, Lock vs Counter for each
-resource, the channel topology) in `plan.md` under an `## Assumptions` heading,
-and confirm the load-bearing ones via the question tool before the Phase 1.5
-gate. Ask the user (question tool) anything you cannot derive. Then write
-`spec/ir.json`:
+lists — deriving the structure IS your job. When the requirement names no cast,
+split the work into the SMALLEST set of agents that each own ONE cohesive
+responsibility — do not fuse unrelated duties, and do not add a coordinator
+that only relays messages (wire peers directly; a supervisor is justified only
+by voting/consensus/multi-input comparison, or by the requirement naming one).
+Also infer failure/retry paths the user left implicit (out-of-stock, rejected
+review, timeout) — they are part of the requirement even when unstated. Record
+every structural choice the user did not state outright (how many agents and
+why, Lock vs Counter for each resource, the channel topology, inferred failure
+paths) in `plan.md` under an `## Assumptions` heading. Ask via the question
+tool ONLY what analysis genuinely cannot resolve (load-bearing facts with no
+defensible default); assume the rest and record it. Then write `spec/ir.json`:
 
 {
   "agents":   [{"id": "writer"}, {"id": "reviewer"}],
