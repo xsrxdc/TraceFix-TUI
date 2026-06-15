@@ -1,129 +1,43 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">The open source AI coding agent.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# TraceFix TUI
 
-<p align="center">
-  <a href="README.md">English</a> |
-  <a href="README.zh.md">简体中文</a> |
-  <a href="README.zht.md">繁體中文</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.it.md">Italiano</a> |
-  <a href="README.da.md">Dansk</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.pl.md">Polski</a> |
-  <a href="README.ru.md">Русский</a> |
-  <a href="README.bs.md">Bosanski</a> |
-  <a href="README.ar.md">العربية</a> |
-  <a href="README.no.md">Norsk</a> |
-  <a href="README.br.md">Português (Brasil)</a> |
-  <a href="README.th.md">ไทย</a> |
-  <a href="README.tr.md">Türkçe</a> |
-  <a href="README.uk.md">Українська</a> |
-  <a href="README.bn.md">বাংলা</a> |
-  <a href="README.gr.md">Ελληνικά</a> |
-  <a href="README.vi.md">Tiếng Việt</a>
-</p>
+The native, interactive front end for **[TraceFix](https://github.com/xsrxdc/tracefix-public)** — a research platform that turns a natural-language multi-agent coordination requirement into a **TLA+-verified** protocol and per-agent runtime prompts.
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+This is a **thin fork of [opencode](https://github.com/sst/opencode)** (MIT). Its only visible agent is the TraceFix `designer`: you describe what your agents need to coordinate, in plain language, and it asks clarifying questions, pauses for your approval of the coordination plan, then derives and TLC-verifies the protocol — all inside the terminal UI. The heavy lifting (the `tla-verify-pluscal` toolchain and the design knowledge) lives in the TraceFix platform repo; this fork is the interactive shell around it.
 
----
+## Relationship to the TraceFix platform
 
-### Installation
+Two repositories, one product:
+
+| Repo | Role |
+|------|------|
+| **[tracefix-public](https://github.com/xsrxdc/tracefix-public)** | the Python verification platform: the `tla-verify-pluscal` CLI, the design knowledge, benchmarks, and runtimes |
+| **this repo** (`tracefix` branch) | the interactive TUI; its `designer` agent calls `tla-verify-pluscal guide` + the CLI from the platform install |
+
+You do **not** need this fork to use TraceFix. The platform repo offers the same design+verify flow headless (`tracefix design`) and through the Claude Code `/tla-verify-pluscal` skill. Build the TUI only for the native interactive experience.
+
+## Build
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
+# 1. Install the TraceFix platform first (provides the toolchain + design guide),
+#    in a clone of tracefix-public:
+pip install -e .
+bash scripts/download_tla2tools.sh
+tla-verify-pluscal doctor
 
-# Package managers
-npm i -g opencode-ai@latest        # or bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS and Linux (recommended, always up to date)
-brew install opencode              # macOS and Linux (official brew formula, updated less)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Any OS
-nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
+# 2. Build this fork (needs bun >= 1.3.14; produces a ~92 MB single-file binary):
+bun install
+bun run packages/opencode/script/build.ts --single --skip-embed-web-ui
+# → packages/opencode/dist/tracefix-tui-<platform>/bin/opencode
 ```
 
-> [!TIP]
-> Remove versions older than 0.1.x before installing.
+`tracefix-public/tui/build-tui.sh` automates this (clone + build + PATH hint). Launch the binary in any project where the platform is `pip install -e .`'d; the designer resolves `tla-verify-pluscal` and the design guide from that install regardless of the launch directory.
 
-### Desktop App (BETA)
+## How it relates to upstream opencode
 
-OpenCode is also available as a desktop application. Download directly from the [releases page](https://github.com/anomalyco/opencode/releases) or [opencode.ai/download](https://opencode.ai/download).
+This fork is deliberately **thin and re-syncable**. `origin` stays pointed at upstream opencode so new releases can be pulled and the TraceFix changes re-applied by cherry-pick. Every change on top of the base tag is one commit listed in **[PATCHES.md](PATCHES.md)**, which is both the changelog and the cherry-pick manifest for tracking new opencode releases.
 
-| Platform              | Download                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, or `.AppImage`     |
+Base: opencode `v1.17.4`. The patches slim the tree to the verification harness, rebrand the front end, make the `designer` the only primary agent, wire the toolchain + `.env` auto-loading, disable self-update, and add typed-domain-tool support. See PATCHES.md for the full list.
 
-```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
-```
+## License
 
-#### Installation Directory
-
-The install script respects the following priority order for the installation path:
-
-1. `$OPENCODE_INSTALL_DIR` - Custom installation directory
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
-3. `$HOME/bin` - Standard user binary directory (if it exists or can be created)
-4. `$HOME/.opencode/bin` - Default fallback
-
-```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
-```
-
-### Agents
-
-OpenCode includes two built-in agents you can switch between with the `Tab` key.
-
-- **build** - Default, full-access agent for development work
-- **plan** - Read-only agent for analysis and code exploration
-  - Denies file edits by default
-  - Asks permission before running bash commands
-  - Ideal for exploring unfamiliar codebases or planning changes
-
-Also included is a **general** subagent for complex searches and multistep tasks.
-This is used internally and can be invoked using `@general` in messages.
-
-Learn more about [agents](https://opencode.ai/docs/agents).
-
-### Documentation
-
-For more info on how to configure OpenCode, [**head over to our docs**](https://opencode.ai/docs).
-
-### Contributing
-
-If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
-
-### Building on OpenCode
-
-If you are working on a project that's related to OpenCode and is using "opencode" as part of its name, for example "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with us in any way.
-
----
-
-**Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+MIT, inherited from upstream opencode — see [LICENSE](LICENSE). TraceFix's modifications are released under the same license.

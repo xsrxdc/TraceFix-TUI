@@ -69,6 +69,7 @@ One row per commit on top of the base tag, in cherry-pick order (`git log
 | 14 | high-level-input design discipline | agent/prompt/designer.txt | Lock/Counter write rule, no relay-only coordinators, infer implicit failure paths, hunt implicit resources, disclose merged-away invented structure | no |
 | 15 | designer = thin TUI adapter over the shared guide | agent/prompt/designer.txt | designer.txt was a 165-line condensed COPY of the skill that drifted + was thinner than the skill/headless paths; now ~55 lines (identity + question-tool + approval gate) that runs `tla-verify-pluscal guide` to pull the SAME workflow source. patches 13/14 disciplines now live only in the skill (single source). | no |
 | 16 | designer surfaces proposed typed tools at the approval gate | agent/prompt/designer.txt | high-level designs can declare typed domain tools (`[tool: ...; impl: external\|local]`); the TUI lists them (name/agent/impl) for user confirmation before generation | no |
+| 17 | TraceFix TUI README (replace upstream opencode front page) | README.md | repo front page was stock opencode (branding, npm/curl install, dead localized-README links); now describes the TraceFix TUI fork, its relation to the platform repo, build, and upstream-sync discipline | no |
 
 Dormant-but-kept (deliberate): server-side `/session/share` routes, `account/`,
 `control-plane/`, `sync/` modules (never activate without an opencode.ai login;
