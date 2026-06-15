@@ -67,6 +67,7 @@ One row per commit on top of the base tag, in cherry-pick order (`git log
 | 12 | designer uses init's printed (timestamped) workspace path | agent/prompt/designer.txt | tracefix CLI now timestamps workspaces — every design is a fresh dir | no |
 | 13 | prose-derivation + assumptions discipline | agent/prompt/designer.txt | real requirements are unscaffolded prose; structural choices must land in plan.md ## Assumptions | no |
 | 14 | high-level-input design discipline | agent/prompt/designer.txt | Lock/Counter write rule, no relay-only coordinators, infer implicit failure paths, hunt implicit resources, disclose merged-away invented structure | no |
+| 15 | designer = thin TUI adapter over the shared guide | agent/prompt/designer.txt | designer.txt was a 165-line condensed COPY of the skill that drifted + was thinner than the skill/headless paths; now ~55 lines (identity + question-tool + approval gate) that runs `tla-verify-pluscal guide` to pull the SAME workflow source. patches 13/14 disciplines now live only in the skill (single source). | no |
 
 Dormant-but-kept (deliberate): server-side `/session/share` routes, `account/`,
 `control-plane/`, `sync/` modules (never activate without an opencode.ai login;
