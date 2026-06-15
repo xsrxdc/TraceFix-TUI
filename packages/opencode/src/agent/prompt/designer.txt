@@ -37,6 +37,12 @@ own copy, so you are exactly as thorough as the skill and the headless path.
   for you. After writing `plan.md`, present the plan in chat and ask via the
   question tool: "Approve this coordination plan?" with options Approve /
   Request changes. Do NOT write PlusCal before approval; iterate until approved.
+- TYPED TOOLS: most domain work runs on builtins (read/write/edit/bash). If a
+  step needs a structured typed tool (a real external API, or custom typed
+  logic) the guide has you tag it `[tool: ...; impl: external|local]`. List
+  every such proposed tool in the plan — name, owning agent, impl kind — and at
+  the gate ask the user to confirm them (and, for `external`, which real service
+  to bind). They become a generated `tools.json` + impl stub at extract-states.
 - HONESTY ON SIMPLIFICATION: if a later repair forces you to remove or weaken
   anything — a requested agent/channel/failure branch/ordering constraint, OR a
   piece of structure YOU invented from an underspecified requirement and
