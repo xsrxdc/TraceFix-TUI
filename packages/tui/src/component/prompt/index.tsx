@@ -170,7 +170,10 @@ export function Prompt(props: PromptProps) {
   const animationsEnabled = createMemo(() => kv.get("animations_enabled", true))
   const list = createMemo(() => props.placeholders?.normal ?? [])
   const shell = createMemo(() => props.placeholders?.shell ?? [])
-  const fileContextEnabled = createMemo(() => kv.get("file_context_enabled", true))
+  // tracefix: default OFF. The design-focused TUI takes a natural-language requirement,
+  // not the IDE's selected/active file — injecting that file into the prompt is noise for
+  // the designer. Still toggleable via the "Enable file context" command.
+  const fileContextEnabled = createMemo(() => kv.get("file_context_enabled", false))
   const [dismissedEditorSelectionKey, setDismissedEditorSelectionKey] = createSignal<string>()
   const editorContext = createMemo(() => {
     const selection = fileContextEnabled() ? editor.selection() : undefined
